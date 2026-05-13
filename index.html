@@ -6,7 +6,7 @@
     <title>VORTEX | Smart Space For Kids</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;700;900&display=swap');
         
         :root {
             --bg: #ffffff;
@@ -25,31 +25,72 @@
 
         .font-serif { font-family: 'Playfair Display', serif; }
 
-        /* 呼吸灯特效优化 */
-        @keyframes subtle-glow {
-            0%, 100% { box-shadow: 0 5px 15px rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.04); }
-            50% { box-shadow: 0 10px 30px rgba(0, 122, 255, 0.08); border-color: rgba(0, 122, 255, 0.1); }
-        }
-
-        /* 视频容器 */
-        .hero-video-box {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            overflow: hidden;
+        /* --- 艺术字核心样式 --- */
+        .hero-art-container {
             position: relative;
-            border-radius: 4px;
-        }
-        @media (min-width: 1024px) {
-            .hero-video-box { aspect-ratio: 21 / 9; }
+            width: 100%;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .hero-video-box video {
-            width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .art-text-bg {
+            position: absolute;
+            font-weight: 900;
+            font-size: 25vw;
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(0,0,0,0.04);
+            white-space: nowrap;
+            user-select: none;
+            z-index: 1;
+            letter-spacing: -0.02em;
+            animation: text-float 20s linear infinite;
         }
-        .video-ready video { opacity: 1; }
 
-        /* 商品卡片设计 */
+        .art-text-main {
+            position: relative;
+            z-index: 10;
+            font-weight: 700;
+            font-size: 12vw;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-main);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: text-reveal 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards 0.5s;
+        }
+
+        .art-subtitle {
+            position: absolute;
+            bottom: 20%;
+            z-index: 20;
+            font-size: 1.25rem;
+            color: #888;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards 1.5s;
+        }
+
+        @keyframes text-reveal {
+            0% { opacity: 0; transform: translateY(30px); letter-spacing: -0.1em; }
+            100% { opacity: 1; transform: translateY(0); letter-spacing: 0.25em; }
+        }
+
+        @keyframes text-float {
+            0% { transform: translateX(10%); }
+            100% { transform: translateX(-10%); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- 商品卡片与原有逻辑 --- */
         .img-wrapper { 
             position: relative; 
             aspect-ratio: 1/1; 
@@ -75,7 +116,6 @@
         
         .product-card:hover img { transform: scale(1.05); }
 
-        /* 标签栏优化 */
         #filter-bar::-webkit-scrollbar { display: none; }
         .filter-btn { 
             font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em;
@@ -84,31 +124,13 @@
         }
         .filter-btn.active { 
             background: var(--text-main); color: #fff; border-color: var(--text-main); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* 法律文本排版 */
         .legal-content-box { 
             display: none; padding: 2.5rem; background: #fff; border: 1px solid #eee;
             margin-top: 1.5rem; font-size: 12px; color: #666; line-height: 2;
         }
         .legal-content-box:target { display: block; animation: fadeIn 0.5s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 骨架屏加载感 */
-        .loading-shimmer {
-            background: linear-gradient(90deg, #f6f7f8 25%, #edeef1 50%, #f6f7f8 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
     </style>
 </head>
 <body class="selection:bg-blue-100 selection:text-blue-600">
@@ -124,12 +146,11 @@
         </div>
     </nav>
 
-    <main class="pt-28 lg:pt-44 pb-32">
-        <section class="px-6 lg:px-16 mb-16 lg:mb-24">
-            <div class="hero-video-box group cursor-pointer" id="hero-video-container">
-                <video id="hero-video" autoplay muted loop playsinline></video>
-                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700"></div>
-            </div>
+    <main class="pt-20">
+        <section class="hero-art-container mb-16 lg:mb-24">
+            <div class="art-text-bg italic">VORTEX</div>
+            <h1 class="art-text-main">Vortex</h1>
+            <p class="art-subtitle font-serif italic text-gray-400">Smart Space For Kids</p>
         </section>
 
         <section class="px-6 lg:px-16 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -142,11 +163,7 @@
             </div>
         </section>
 
-        <div id="p-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-6 lg:px-16 max-w-[1600px] mx-auto">
-            <div class="aspect-square loading-shimmer"></div>
-            <div class="aspect-square loading-shimmer"></div>
-            <div class="aspect-square loading-shimmer"></div>
-        </div>
+        <div id="p-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-6 lg:px-16 max-w-[1600px] mx-auto"></div>
     </main>
 
     <footer class="bg-[#0a0a0a] pt-24 pb-12 px-6 lg:px-16 text-white">
@@ -181,18 +198,12 @@
                     </ul>
                 </div>
             </div>
-            
             <div id="privacy" class="legal-content-box text-black">
                 <h3 class="font-bold mb-4 uppercase tracking-widest text-sm">Privacy Policy</h3>
                 <p>VORTEX respects the digital footprint of every visitor. We ensure that your data is handled with the same care as our physical products.</p>
             </div>
-
-            <div class="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                 <p class="text-[8px] tracking-[0.5em] text-gray-600 uppercase">© VORTEX 2026 PROUDLY POWERED BY RUHANG</p>
-                <div class="flex gap-6 text-[8px] tracking-[0.2em] text-gray-600 uppercase">
-                    <span>Shenzhen, China</span>
-                    <span>Global Distribution</span>
-                </div>
             </div>
         </div>
     </footer>
@@ -212,19 +223,6 @@
                 const res = await response.json();
                 if (res.success) {
                     allRecords = res.data.records;
-                    
-                    // 视频/头图设置
-                    const firstRecord = allRecords[0].fields;
-                    let topVideoUrl = firstRecord['视频'] || (Array.isArray(firstRecord['图片']) ? firstRecord['图片'][0].url : firstRecord['图片']);
-                    
-                    const videoElement = document.getElementById('hero-video');
-                    if (topVideoUrl) {
-                        videoElement.src = topVideoUrl;
-                        videoElement.oncanplay = () => {
-                            document.getElementById('hero-video-container').classList.add('video-ready');
-                        };
-                    }
-
                     generateFilterButtons(allRecords);
                     renderGrid(allRecords); 
                 }
@@ -262,10 +260,7 @@
                 const f = item.fields;
                 let imgUrl = f['图片'] ? (Array.isArray(f['图片']) ? f['图片'][0].url : f['图片']) : "";
                 if (!imgUrl) return "";
-                
-                // 模拟 SKU 编号增加品牌感
                 const sku = `VT-${1000 + i}`;
-                
                 return `
                     <div class="product-card opacity-0 translate-y-8 transition-all duration-1000" style="transition-delay: ${i*100}ms" id="card-${i}">
                         <div class="img-wrapper cursor-pointer" onclick="window.open('${f['链接'] || '#'}')">
@@ -276,8 +271,8 @@
                         </div>
                         <div class="mt-6 flex justify-between items-start">
                             <div>
-                                <h3 class="text-[11px] font-bold uppercase tracking-widest text-gray-800">${f['名称'] || 'Product ' + i}</h3>
-                                <p class="text-[9px] text-gray-400 mt-1 uppercase tracking-tighter">${Array.isArray(f['分类']) ? f['分类'].join(' / ') : (f['分类'] || 'Collection')}</p>
+                                <h3 class="text-[11px] font-bold uppercase tracking-widest text-gray-800">${f['名称'] || 'Collection Item'}</h3>
+                                <p class="text-[9px] text-gray-400 mt-1 uppercase tracking-tighter">${Array.isArray(f['分类']) ? f['分类'].join(' / ') : (f['分类'] || 'Product')}</p>
                             </div>
                             <div class="h-1 w-8 bg-black/5 mt-3"></div>
                         </div>
@@ -304,17 +299,11 @@
     <div id="loading" class="fixed inset-0 bg-white z-[1001] flex items-center justify-center transition-opacity duration-700">
         <div class="flex flex-col items-center">
             <div class="w-12 h-[1px] bg-gray-200 overflow-hidden relative">
-                <div class="absolute inset-0 bg-blue-600 animate-[loading-bar_1.5s_infinite]"></div>
+                <div class="absolute inset-0 bg-black animate-[loading-bar_1.5s_infinite]"></div>
             </div>
-            <span class="mt-4 text-[9px] tracking-[0.8em] text-gray-400 uppercase animate-pulse">Vortex</span>
+            <span class="mt-4 text-[9px] tracking-[0.8em] text-gray-400 uppercase">Loading</span>
         </div>
     </div>
-
-    <style>
-        @keyframes loading-bar {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-    </style>
+    <style>@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }</style>
 </body>
 </html>
