@@ -1,132 +1,343 @@
-<nav class="fixed top-0 w-full z-50 p-6 lg:px-16 flex justify-between items-center bg-white/80 backdrop-blur-lg">
-    <div class="font-bold tracking-[0.3em] text-[10px] lg:text-xs uppercase">VORTEX</div>
-</nav>
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
 
-<main class="pt-24 lg:pt-40 pb-20">
-    <section class="px-6 lg:px-16 mb-12">
-        <div class="hero-video-box" id="hero-video-container">
-            <video id="hero-video" autoplay muted loop playsinline></video>
-        </div>
-    </section>
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+}
 
-    <section class="px-6 lg:px-16 mb-10" id="filter-bar">
-        <button onclick="filterRecords('all')" class="filter-btn active" id="btn-all">All Objects</button>
-    </section>
+:root {
+  --bg-primary: #f8f8f8;
+  --ink-primary: #121212;
+  --accent-glow: rgba(0, 122, 255, 0.05);
+}
 
-    <div id="p-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16 px-6 lg:px-16 max-w-[1600px] mx-auto"></div>
-</main>
+body {
+  background-color: var(--bg-primary);
+  color: var(--ink-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
 
-<footer class="bg-white border-t border-black/[0.05] pt-20 pb-10 px-6 lg:px-16 text-black">
-    <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div class="space-y-4">
-                <h4 class="text-[10px] font-bold uppercase tracking-[0.2em]">Contact</h4>
-                <p class="text-[10px] text-gray-500 uppercase tracking-wider">SHENZHEN RUHANG INTERNATIONAL</p>
-            </div>
-            <div class="space-y-4">
-                <h4 class="text-[10px] font-bold uppercase tracking-[0.2em]">Legal</h4>
-                <ul class="flex flex-wrap gap-4 text-[10px] text-gray-400 uppercase tracking-tighter">
-                    <li><a href="#privacy" class="hover:text-black">Privacy</a></li>
-                    <li><a href="#terms" class="hover:text-black">Terms</a></li>
-                    <li><a href="#refund" class="hover:text-black">Returns</a></li>
-                </ul>
-            </div>
-            <div class="md:text-right">
-                <a href="mailto:wayfair@vortexd.com" class="text-lg font-light border-b border-black pb-1">wayfair@vortexd.com</a>
-            </div>
-        </div>
-        
-        <div id="privacy" class="legal-content-box">
-            <p>VORTEX respects the digital footprint of every visitor...</p>
-        </div>
+/* 艺术画布底纹 */
+.canvas-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -5;
+  opacity: 0.4;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%);
+}
 
-        <p class="mt-20 text-center text-[7px] tracking-[0.4em] text-gray-300 uppercase">© VORTEX 2026</p>
-    </div>
-</footer>
+/* 颗粒感滤镜 */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
 
-<script>
-    const API_CONFIG = {
-        TOKEN: "uskSHurHAYSbDQBvTya8V2X",
-        SHEET: "dstws9yu81bqKu8cvc"
+/* 极简滚动条 */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+/* 背景平移效果 */
+@keyframes slow-pan {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.1) translate(-2%, 2%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+.bg-animate {
+  animation: slow-pan 20s ease-in-out infinite;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+主程序逻辑：src/App.tsx
+包含了开屏动画、自定义指针、响应式产品网格（手机1列/平板2列/电脑3列）以及法律模态框。
+code
+TSX
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Menu, X, ArrowUpRight, Instagram, Globe, Mail, ArrowUp } from 'lucide-react';
+import { cn } from './lib/utils';
+
+// API 配置
+const API_CONFIG = {
+  TOKEN: import.meta.env.VITE_AITABLE_TOKEN || "uskSHurHAYSbDQBvTya8V2X",
+  SHEET: import.meta.env.VITE_AITABLE_SHEET_ID || "dstws9yu81bqKu8cvc",
+  VIEW: import.meta.env.VITE_AITABLE_VIEW_ID || "viwf1vrvWHjzg"
+};
+
+// 自定义艺术指针
+const CustomCursor = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [cursorText, setCursorText] = useState("");
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+      const target = e.target as HTMLElement;
+      const hoverable = target.closest('button, a, .group');
+      setIsHovering(!!hoverable);
+      setCursorText(target.closest('.group') ? "VIEW" : "");
     };
-    let allRecords = []; 
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
-    async function init() {
-        try {
-            const response = await fetch(`https://api.vika.cn/fusion/v1/datasheets/${API_CONFIG.SHEET}/records?viewId=viwf1vrvWHjzg`, {
-                headers: { 'Authorization': `Bearer ${API_CONFIG.TOKEN}` }
-            });
-            const res = await response.json();
-            if (res.success) {
-                allRecords = res.data.records;
-                
-                const firstRecord = allRecords[0].fields;
-                let topVideoUrl = firstRecord['视频'] || (Array.isArray(firstRecord['图片']) ? firstRecord['图片'][0].url : firstRecord['图片']);
-                
-                const videoElement = document.getElementById('hero-video');
-                if (topVideoUrl) {
-                    videoElement.src = topVideoUrl;
-                    videoElement.oncanplay = () => {
-                        document.getElementById('hero-video-container').classList.add('video-ready');
-                    };
-                }
+  return (
+    <motion.div
+      className="fixed top-0 left-0 w-4 h-4 bg-black rounded-full pointer-events-none z-[9999] mix-blend-difference hidden lg:flex items-center justify-center text-[4px] text-white font-bold tracking-widest"
+      animate={{
+        x: mousePos.x - (isHovering ? 20 : 8),
+        y: mousePos.y - (isHovering ? 20 : 8),
+        width: isHovering ? 40 : 16,
+        height: isHovering ? 40 : 16,
+      }}
+      transition={{ type: "spring", damping: 30, stiffness: 400, mass: 0.2 }}
+    >
+      {cursorText}
+    </motion.div>
+  );
+};
 
-                generateFilterButtons(allRecords);
-                renderGrid(allRecords); 
-            }
-        } catch (err) { console.error("Error:", err); }
-        finally {
-            const loader = document.getElementById('loading');
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 500);
-        }
-    }
+// 开屏加载组件
+const LoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-0 bg-white z-[100] flex items-center justify-center overflow-hidden"
+    >
+      <div className="relative flex flex-col items-center">
+        <motion.div
+          initial={{ opacity: 0, letterSpacing: "1em" }}
+          animate={{ opacity: 1, letterSpacing: "0.5em" }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="font-serif text-3xl lg:text-6xl uppercase font-bold"
+        >
+          VORTEX
+        </motion.div>
+        <div className="w-48 h-[1px] bg-black/5 mt-8 relative overflow-hidden">
+          <motion.div
+            initial={{ left: "-100%" }}
+            animate={{ left: "100%" }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 w-1/2 h-full bg-black/40"
+          />
+        </div>
+        <motion.p onAnimationComplete={onComplete} className="mt-4 text-[8px] tracking-[0.6em] uppercase font-medium opacity-30">
+          Initializing Archive
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+};
 
-    function generateFilterButtons(records) {
-        const categories = new Set();
-        records.forEach(r => {
-            const tags = r.fields['分类'];
-            if (Array.isArray(tags)) tags.forEach(tag => categories.add(tag));
-            else if (tags) categories.add(tags);
+// 背景艺术层
+const ArtisticBackground = () => (
+  <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 bg-[#f9f9f9]" />
+    <div className="canvas-texture" />
+    <motion.div 
+      animate={{ x: [0, 50, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
+      transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+      className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full opacity-[0.06] blur-[150px]"
+      style={{ background: 'radial-gradient(circle, #4a90e2 0%, transparent 70%)' }}
+    />
+    <motion.div 
+      animate={{ x: [0, -40, 0], y: [0, 60, 0], scale: [1, 1.2, 1] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full opacity-[0.05] blur-[150px]"
+      style={{ background: 'radial-gradient(circle, #e94e77 0%, transparent 70%)' }}
+    />
+    <div className="grain-overlay" />
+  </div>
+);
+
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<any[]>([]);
+  const [filter, setFilter] = useState('all');
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  const [activeLegal, setActiveLegal] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setShowTopBtn(window.scrollY > 800);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`https://api.vika.cn/fusion/v1/datasheets/${API_CONFIG.SHEET}/records?viewId=${API_CONFIG.VIEW}`, { 
+          headers: { 'Authorization': `Bearer ${API_CONFIG.TOKEN}` } 
         });
-        const bar = document.getElementById('filter-bar');
-        categories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.className = 'filter-btn';
-            btn.innerText = cat;
-            btn.onclick = () => filterRecords(cat);
-            btn.setAttribute('data-cat', cat);
-            bar.appendChild(btn);
-        });
-    }
+        const res = await response.json();
+        if (res.success) setRecords(res.data.records);
+      } catch (err) { console.error(err); }
+      finally { setIsLoadingData(false); }
+    };
+    fetchData();
+  }, []);
 
-    function renderGrid(data) {
-        const grid = document.getElementById('p-grid');
-        grid.innerHTML = data.map((item, i) => {
-            const f = item.fields;
-            let imgUrl = f['图片'] ? (Array.isArray(f['图片']) ? f['图片'][0].url : f['图片']) : "";
-            if (!imgUrl) return "";
-            return `
-                <div class="product-card opacity-0 translate-y-6 transition-all duration-700" style="transition-delay: ${i*50}ms" id="card-${i}">
-                    <div class="img-wrapper" onclick="window.open('${f['链接'] || '#'}')">
-                        <img src="${imgUrl}" onload="document.getElementById('card-${i}').classList.remove('opacity-0', 'translate-y-6')">
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    records.forEach(r => {
+      const tags = r.fields['分类'];
+      if (Array.isArray(tags)) tags.forEach(t => cats.add(t));
+      else if (tags) cats.add(tags);
+    });
+    return Array.from(cats);
+  }, [records]);
+
+  const filteredRecords = useMemo(() => {
+    if (filter === 'all') return records;
+    return records.filter(r => {
+      const tags = r.fields['分类'];
+      return Array.isArray(tags) ? tags.includes(filter) : tags === filter;
+    });
+  }, [records, filter]);
+
+  return (
+    <div className="relative min-h-screen font-sans selection:bg-black selection:text-white">
+      <CustomCursor />
+      <AnimatePresence>{loading && <LoadingScreen onComplete={() => setLoading(false)} />}</AnimatePresence>
+      <ArtisticBackground />
+      
+      <main className="pt-24 lg:pt-48 pb-32">
+        {/* 艺术标题区 */}
+        <section className="px-6 lg:px-16 mb-24 max-w-[1800px] mx-auto">
+          <motion.h1 
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="font-serif text-[22vw] lg:text-[16vw] leading-[0.75] tracking-tighter uppercase font-bold text-black"
+          >
+            Vortex
+          </motion.h1>
+          <div className="mt-8 flex flex-col md:flex-row justify-between items-end gap-8">
+            <p className="max-w-sm text-[10px] lg:text-xs uppercase tracking-[0.25em] opacity-50 leading-loose">
+              Curating the ephemeral beauty of the physical world into a structured digital chronicle.
+            </p>
+            <div className="flex flex-col items-end gap-2 text-[8px] uppercase tracking-[0.4em] font-bold opacity-30">
+              <span>Archive Ready 2026</span>
+              <div className="w-24 h-[1px] bg-black/20" />
+            </div>
+          </div>
+        </section>
+
+        {/* 分类栏 */}
+        <section className="px-6 lg:px-16 mb-16 sticky top-20 z-40">
+          <div className="flex overflow-x-auto no-scrollbar gap-2 lg:gap-4 py-4">
+            <button onClick={() => setFilter('all')} className={cn("px-8 py-3 text-[9px] font-bold uppercase tracking-[0.3em] rounded-full border transition-all", filter === 'all' ? "bg-black text-white border-black shadow-xl scale-105" : "bg-white/40 backdrop-blur-md text-black/50 border-black/5 hover:border-black/20")}>
+              All Objects
+            </button>
+            {categories.map((cat, idx) => (
+              <button key={`cat-${cat}-${idx}`} onClick={() => setFilter(cat)} className={cn("px-8 py-3 text-[9px] font-bold uppercase tracking-[0.3em] rounded-full border transition-all", filter === cat ? "bg-black text-white border-black shadow-xl scale-105" : "bg-white/40 backdrop-blur-md text-black/50 border-black/5 hover:border-black/20")}>
+                {cat}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* 产品网格 - 固定每行3个(桌面端) */}
+        <section className="px-6 lg:px-16 max-w-[1800px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16">
+            <AnimatePresence mode="popLayout">
+              {filteredRecords.map((record, i) => {
+                const f = record.fields;
+                const imgUrl = Array.isArray(f['图片']) ? f['图片'][0].url : f['图片'];
+                if (!imgUrl) return null;
+                return (
+                  <motion.div key={`record-${record.id || i}-${i}`} layout initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 1, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }} className="group relative">
+                    <div onClick={() => window.open(f['链接'] || '#', '_blank')} className="relative w-full aspect-[1/1] mb-6 bg-white flex items-center justify-center overflow-hidden transition-all duration-700 hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] cursor-pointer">
+                      <motion.img src={imgUrl} className="w-full h-full object-contain p-14 lg:p-16 transition-all duration-1000 group-hover:scale-110 group-hover:-translate-y-4" loading="lazy" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 z-20">
+                         <ArrowUpRight size={14} />
+                      </div>
                     </div>
-                </div>
-            `;
-        }).join('');
-    }
+                    <div className="flex justify-between items-start px-2">
+                        <div className="space-y-1">
+                           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80 group-hover:opacity-100">{f['标题'] || `EXHIBIT ${i+1}`}</h3>
+                           <p className="text-[8px] uppercase tracking-[0.3em] opacity-30">{Array.isArray(f['分类']) ? f['分类'].join(' / ') : f['分类']}</p>
+                        </div>
+                        <span className="text-[8px] font-serif italic py-1 px-2 border border-black/5 rounded">#{String(i+1).padStart(3,'0')}</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        </section>
+      </main>
 
-    function filterRecords(selectedCat) {
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.toggle('active', (btn.getAttribute('data-cat') || 'all') === selectedCat);
-        });
-        const filtered = selectedCat === 'all' ? allRecords : allRecords.filter(item => {
-            const tags = item.fields['分类'];
-            return Array.isArray(tags) ? tags.includes(selectedCat) : tags === selectedCat;
-        });
-        renderGrid(filtered);
-    }
+      {/* 页脚 */}
+      <footer className="px-6 lg:px-16 py-24 bg-white border-t border-black/5">
+        <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+          <div className="col-span-1 md:col-span-2 space-y-8">
+            <h2 className="font-serif text-5xl lg:text-7xl font-bold tracking-tighter">VORTEX</h2>
+            <p className="max-w-sm text-xs opacity-50 font-light leading-relaxed">International archival project documenting the evolution of design.</p>
+          </div>
+          <div className="space-y-6">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em]">Directory</h4>
+            <ul className="space-y-4 text-[10px] uppercase tracking-[0.15em] opacity-60">
+              <li onClick={() => setActiveLegal('Legal Notice')} className="hover:text-black cursor-pointer">Legal Notice</li>
+              <li onClick={() => setActiveLegal('Privacy Policy')} className="hover:text-black cursor-pointer">Privacy</li>
+            </ul>
+          </div>
+          <div className="space-y-6 text-[10px]">
+             <h4 className="font-bold uppercase tracking-[0.3em]">Contact</h4>
+             <a href="mailto:wayfair@vortexd.com" className="border-b border-black/20 pb-1">wayfair@vortexd.com</a>
+          </div>
+        </div>
+      </footer>
 
-    window.onload = init;
-</script>
-<div id="loading" class="fixed inset-0 bg-white z-[1001] flex items-center justify-center text-[10px] tracking-[0.5em] transition-opacity duration-500">VORTEX</div>
+      {/* 回到顶部 */}
+      <AnimatePresence>
+        {showTopBtn && (
+          <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="fixed bottom-10 right-6 lg:right-16 w-12 h-12 bg-white border border-black/5 rounded-full flex items-center justify-center shadow-xl z-50 hover:bg-black hover:text-white transition-all group">
+            <ArrowUp size={16} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* 法律条款模态框 */}
+      <AnimatePresence>
+        {activeLegal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-white/40 backdrop-blur-2xl">
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="bg-white border border-black/5 p-12 lg:p-24 max-w-2xl w-full relative shadow-2xl">
+              <button onClick={() => setActiveLegal(null)} className="absolute top-8 right-8 w-10 h-10 flex items-center justify-center border border-black/5 rounded-full hover:bg-black hover:text-white transition-all"><X size={16} /></button>
+              <h3 className="font-serif text-3xl mb-8 uppercase font-bold">{activeLegal}</h3>
+              <div className="text-[10px] opacity-60 uppercase tracking-widest leading-relaxed space-y-4">
+                <p>VORTEX respects the digital footprint of every visitor. Our archive is built on the principles of transparency.</p>
+                <p>All records are for exhibition purposes within this digital chronicle.</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
