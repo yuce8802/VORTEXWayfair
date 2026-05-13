@@ -9,15 +9,22 @@
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;700;900&display=swap');
         
         :root {
-            --bg: #ffffff;
-            --text-main: #111111; 
-            --accent-blue: #007AFF;
-            --soft-gray: #f9f9fb;
+            --text-main: #1e293b; 
         }
 
-        html { scroll-behavior: smooth; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #e0f2fe;
+            background-image: url('https://i.pinimg.com/736x/be/7e/e6/be7ee69e6db1a7f3608db196e76a5cd7.jpg') !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+        }
+
         body { 
-            background: var(--bg); 
             font-family: 'Inter', sans-serif; 
             color: var(--text-main); 
             -webkit-font-smoothing: antialiased; 
@@ -25,188 +32,164 @@
 
         .font-serif { font-family: 'Playfair Display', serif; }
 
-        /* --- 艺术字核心样式 --- */
-        .hero-art-container {
-            position: relative;
-            width: 100%;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-container {
             height: 50vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            background: #fff;
-            border-bottom: 1px solid #f0f0f0;
+            background: transparent !important;
         }
 
-        .art-text-bg {
-            position: absolute;
-            font-weight: 900;
-            font-size: 25vw;
-            line-height: 1;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(0,0,0,0.04);
-            white-space: nowrap;
-            user-select: none;
-            z-index: 1;
-            letter-spacing: -0.02em;
-            animation: text-float 20s linear infinite;
-        }
-
-        .art-text-main {
-            position: relative;
-            z-index: 10;
+        .hero-title {
             font-weight: 700;
-            font-size: 12vw;
+            font-size: 10vw;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--text-main);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: text-reveal 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards 0.5s;
+            color: #1e293b;
+            text-shadow: 0 5px 20px rgba(255, 255, 255, 0.5);
+            animation: fadeInScale 1.5s ease-out;
         }
 
-        .art-subtitle {
-            position: absolute;
-            bottom: 20%;
-            z-index: 20;
-            font-size: 1.25rem;
-            color: #888;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.5s;
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
-        @keyframes text-reveal {
-            0% { opacity: 0; transform: translateY(30px); letter-spacing: -0.1em; }
-            100% { opacity: 1; transform: translateY(0); letter-spacing: 0.25em; }
-        }
-
-        @keyframes text-float {
-            0% { transform: translateX(10%); }
-            100% { transform: translateX(-10%); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- 商品卡片与原有逻辑 --- */
         .img-wrapper { 
-            position: relative; 
             aspect-ratio: 1/1; 
-            background: var(--soft-gray);
-            border: 1px solid rgba(0,0,0,0.03);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            background: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.4s ease;
         }
         
-        .img-wrapper img { 
-            width: 85%; height: 85%; object-fit: contain; 
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
         .product-card:hover .img-wrapper {
+            background: rgba(255, 255, 255, 0.7) !important;
             transform: translateY(-10px);
-            background: #fff;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-            border-color: transparent;
+            box-shadow: 0 20px 40px rgba(30, 41, 59, 0.1);
         }
-        
-        .product-card:hover img { transform: scale(1.05); }
 
-        #filter-bar::-webkit-scrollbar { display: none; }
         .filter-btn { 
-            font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em;
-            padding: 10px 24px; border-radius: 100px; border: 1px solid #eee; 
-            color: #666; transition: all 0.3s ease;
+            font-size: 10px; font-weight: 600; text-transform: uppercase;
+            padding: 10px 24px; border-radius: 100px; 
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
         }
-        .filter-btn.active { 
-            background: var(--text-main); color: #fff; border-color: var(--text-main); 
+        .filter-btn.active { background: #1e293b; color: #fff; }
+
+        footer {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .legal-content-box { 
-            display: none; padding: 2.5rem; background: #fff; border: 1px solid #eee;
-            margin-top: 1.5rem; font-size: 12px; color: #666; line-height: 2;
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .legal-content-box:target { display: block; animation: fadeIn 0.5s ease; }
+        .modal.active { display: flex; }
     </style>
 </head>
-<body class="selection:bg-blue-100 selection:text-blue-600">
+<body>
 
-    <nav class="fixed top-0 w-full z-50 p-6 lg:px-16 flex justify-between items-center bg-white/70 backdrop-blur-xl border-b border-gray-50">
+    <nav class="fixed top-0 w-full z-50 p-6 lg:px-16 flex justify-between items-center">
         <div class="flex flex-col">
             <span class="font-bold tracking-[0.4em] text-xs lg:text-sm uppercase">VORTEX</span>
-            <span class="text-[8px] tracking-[0.2em] text-gray-400 font-medium uppercase mt-1">Smart Space For Kids</span>
+            <span class="text-[8px] tracking-[0.2em] text-blue-600/60 font-bold uppercase mt-1">Smart Space For Kids</span>
         </div>
-        <div class="hidden lg:flex gap-8 text-[10px] uppercase tracking-widest font-semibold text-gray-500">
-            <a href="#" class="hover:text-black transition-colors">Collection</a>
-            <a href="#" class="hover:text-black transition-colors">Philosophy</a>
+        <div class="hidden lg:flex gap-8 text-[10px] uppercase tracking-widest font-semibold text-slate-600">
+            <a href="#" class="hover:text-blue-600 transition-colors">Collection</a>
+            <a href="#" class="hover:text-blue-600 transition-colors">Philosophy</a>
         </div>
     </nav>
 
     <main class="pt-20">
-        <section class="hero-art-container mb-16 lg:mb-24">
-            <div class="art-text-bg italic">VORTEX</div>
-            <h1 class="art-text-main">Vortex</h1>
-            <p class="art-subtitle font-serif italic text-gray-400">Smart Space For Kids</p>
+        <section class="hero-container">
+            <h1 class="hero-title">VORTEX</h1>
         </section>
 
         <section class="px-6 lg:px-16 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-                <h2 class="font-serif text-3xl lg:text-4xl mb-2">The Storage Series</h2>
-                <p class="text-xs text-gray-400 tracking-wider uppercase">Organizing childhood with precision</p>
+                <h2 class="font-serif text-3xl lg:text-4xl mb-2 text-slate-800">The Storage Series</h2>
+                <p class="text-xs text-blue-600/60 tracking-wider uppercase font-bold">Organizing childhood with precision</p>
             </div>
-            <div id="filter-bar" class="flex overflow-x-auto white-space-nowrap gap-3 pb-2 -mx-6 px-6 md:mx-0 md:px-0">
+            <div id="filter-bar" class="flex overflow-x-auto gap-3 pb-2">
                 <button onclick="filterRecords('all')" class="filter-btn active" id="btn-all">All Objects</button>
             </div>
         </section>
 
-        <div id="p-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-6 lg:px-16 max-w-[1600px] mx-auto"></div>
+        <div id="p-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 px-6 lg:px-16 max-w-[1600px] mx-auto pb-32"></div>
     </main>
 
-    <footer class="bg-[#0a0a0a] pt-24 pb-12 px-6 lg:px-16 text-white">
+    <footer class="pt-24 pb-12 px-6 lg:px-16 text-slate-800">
         <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-16 md:gap-8">
-                <div class="md:col-span-2 space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Contact Agency</h4>
-                    <p class="text-sm font-light text-gray-300 leading-relaxed max-w-sm">
-                        SHENZHEN RUHANG INTERNATIONAL<br>
-                        Specializing in innovative storage solutions for the modern family ecosystem.
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 text-center md:text-left">
+                <div class="md:col-span-2 space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-blue-500">Contact</h4>
+                    <p class="text-[11px] font-bold tracking-tight uppercase">SHENZHEN RUHANG INTERNATIONAL HOUSEHOLD PRODUCTS CO., LTD.</p>
+                    <p class="text-[10px] leading-relaxed text-slate-500 font-medium max-w-md">
+                        ROOM 1303, NO. 328 XINMU ROAD, SHANGMUGU COMMUNITY,<br>
+                        PINGHU STREET, LONGGANG DISTRICT, SHENZHEN
                     </p>
-                    <div class="pt-4">
-                        <a href="mailto:wayfair@vortexd.com" class="text-xl lg:text-2xl font-light border-b border-white/20 pb-2 hover:border-white transition-all">
-                            wayfair@vortexd.com
-                        </a>
+                    <div class="pt-2">
+                        <a href="mailto:wayfair@vortexd.com" class="text-lg font-light border-b border-blue-500/20 pb-1">wayfair@vortexd.com</a>
                     </div>
                 </div>
-                <div class="space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Navigation</h4>
-                    <ul class="space-y-3 text-xs tracking-widest text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">Official Store</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Amazon US</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Amazon EU</a></li>
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Shop</h4>
+                    <ul class="space-y-2 text-xs tracking-widest">
+                        <li><a href="#" class="hover:text-blue-600">Wayfair Store</a></li>
                     </ul>
                 </div>
-                <div class="space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Legal</h4>
-                    <ul class="space-y-3 text-xs tracking-widest text-gray-400 uppercase">
-                        <li><a href="#privacy" class="hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#terms" class="hover:text-white">Terms of Service</a></li>
-                        <li><a href="#refund" class="hover:text-white">Returns</a></li>
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Legal</h4>
+                    <ul class="space-y-2 text-xs tracking-widest">
+                        <li><a href="javascript:void(0)" onclick="openModal('privacy')" class="hover:text-blue-600">Privacy Policy</a></li>
+                        <li><a href="javascript:void(0)" onclick="openModal('terms')" class="hover:text-blue-600">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
-            <div id="privacy" class="legal-content-box text-black">
-                <h3 class="font-bold mb-4 uppercase tracking-widest text-sm">Privacy Policy</h3>
-                <p>VORTEX respects the digital footprint of every visitor. We ensure that your data is handled with the same care as our physical products.</p>
-            </div>
-            <div class="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-                <p class="text-[8px] tracking-[0.5em] text-gray-600 uppercase">© VORTEX 2026 PROUDLY POWERED BY RUHANG</p>
+            <div class="mt-24 pt-8 border-t border-slate-900/5 text-[8px] tracking-[0.5em] text-slate-400 text-center">
+                © VORTEX 2026 | BUILT FOR SMART SPACES
             </div>
         </div>
     </footer>
+
+    <div id="legalModal" class="modal" onclick="closeModal()">
+        <div class="glass-panel max-w-2xl w-full max-h-[70vh] overflow-y-auto p-8 rounded-2xl" onclick="event.stopPropagation()">
+            <div id="modalContent" class="text-slate-700 space-y-4">
+                </div>
+            <button onclick="closeModal()" class="mt-8 text-[10px] font-bold uppercase tracking-widest bg-slate-800 text-white px-6 py-2 rounded-full">Close</button>
+        </div>
+    </div>
 
     <script>
         const API_CONFIG = {
@@ -236,6 +219,7 @@
             }
         }
 
+        // ... (保持 generateFilterButtons, renderGrid, filterRecords 函数逻辑不变) ...
         function generateFilterButtons(records) {
             const categories = new Set();
             records.forEach(r => {
@@ -260,21 +244,13 @@
                 const f = item.fields;
                 let imgUrl = f['图片'] ? (Array.isArray(f['图片']) ? f['图片'][0].url : f['图片']) : "";
                 if (!imgUrl) return "";
-                const sku = `VT-${1000 + i}`;
                 return `
-                    <div class="product-card opacity-0 translate-y-8 transition-all duration-1000" style="transition-delay: ${i*100}ms" id="card-${i}">
+                    <div class="product-card opacity-0 translate-y-8 transition-all duration-700" style="transition-delay: ${i*50}ms" id="card-${i}">
                         <div class="img-wrapper cursor-pointer" onclick="window.open('${f['链接'] || '#'}')">
-                            <img src="${imgUrl}" onload="document.getElementById('card-${i}').classList.remove('opacity-0', 'translate-y-8')">
-                            <div class="absolute bottom-4 left-4">
-                                <span class="text-[7px] tracking-[0.3em] text-gray-400 font-bold uppercase">${sku}</span>
-                            </div>
+                            <img src="${imgUrl}" style="width:80%" onload="document.getElementById('card-${i}').classList.remove('opacity-0', 'translate-y-8')">
                         </div>
-                        <div class="mt-6 flex justify-between items-start">
-                            <div>
-                                <h3 class="text-[11px] font-bold uppercase tracking-widest text-gray-800">${f['名称'] || 'Collection Item'}</h3>
-                                <p class="text-[9px] text-gray-400 mt-1 uppercase tracking-tighter">${Array.isArray(f['分类']) ? f['分类'].join(' / ') : (f['分类'] || 'Product')}</p>
-                            </div>
-                            <div class="h-1 w-8 bg-black/5 mt-3"></div>
+                        <div class="mt-4 text-center">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-700">${f['名称'] || ''}</h3>
                         </div>
                     </div>
                 `;
@@ -283,8 +259,7 @@
 
         function filterRecords(selectedCat) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                const btnCat = btn.getAttribute('data-cat') || 'all';
-                btn.classList.toggle('active', btnCat === selectedCat);
+                btn.classList.toggle('active', (btn.getAttribute('data-cat') || 'all') === selectedCat);
             });
             const filtered = selectedCat === 'all' ? allRecords : allRecords.filter(item => {
                 const tags = item.fields['分类'];
@@ -293,17 +268,26 @@
             renderGrid(filtered);
         }
 
+        // 弹窗逻辑
+        function openModal(type) {
+            const content = document.getElementById('modalContent');
+            if(type === 'privacy') {
+                content.innerHTML = `<h2 class="text-xl font-bold">Privacy Policy</h2><p class="text-sm">We value your privacy. VORTEX only collects information necessary to improve your experience. Your data will never be shared with third parties without consent.</p>`;
+            } else {
+                content.innerHTML = `<h2 class="text-xl font-bold">Terms of Service</h2><p class="text-sm">By using VORTEX services, you agree to our terms of smart space usage, focused on safety and quality for children's environments.</p>`;
+            }
+            document.getElementById('legalModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('legalModal').classList.remove('active');
+        }
+
         window.onload = init;
     </script>
-    
-    <div id="loading" class="fixed inset-0 bg-white z-[1001] flex items-center justify-center transition-opacity duration-700">
-        <div class="flex flex-col items-center">
-            <div class="w-12 h-[1px] bg-gray-200 overflow-hidden relative">
-                <div class="absolute inset-0 bg-black animate-[loading-bar_1.5s_infinite]"></div>
-            </div>
-            <span class="mt-4 text-[9px] tracking-[0.8em] text-gray-400 uppercase">Loading</span>
-        </div>
+
+    <div id="loading" class="fixed inset-0 z-[1001] flex items-center justify-center transition-opacity duration-700">
+        <span class="text-[9px] tracking-[0.8em] text-blue-500 uppercase">Updating Space...</span>
     </div>
-    <style>@keyframes loading-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }</style>
 </body>
 </html>
